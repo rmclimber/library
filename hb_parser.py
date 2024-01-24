@@ -4,6 +4,20 @@ import sys
 import os
 import argparse
 
+# bundle the records together
+class Record:
+    def __init__(title: str='', publisher=''):
+        self.title = title
+        self.publisher = publisher
+
+    def get_tuple():
+        return self.title, self.publisher
+
+    def display(title_first: bool=True):
+        if title_first:
+            return f"{self.title}: {self.publisher}"
+        return f"{self.publisher}: {self.title}"
+
 class HBParser(HTMLParser):
     DEFAULT_OUTPUT_NAME = 'output.csv'
     FORMAT_TAG_1 = 'subproduct-selector'
@@ -20,7 +34,13 @@ class HBParser(HTMLParser):
             print(f"Invalid filename: {filename}. Exiting.")
             exit()
 
-        # handle command-line args
+        # navigation flags
+        self.in_format_1 = False
+        self.in_format_2 = False
+        self.in_format_3 = False
+
+        # key data structure
+        self.books = []
 
 
 
