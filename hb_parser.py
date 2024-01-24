@@ -6,15 +6,22 @@ import argparse
 
 # bundle the records together
 class Record:
-    def __init__(title: str='', publisher=''):
+    def __init__(title: str='', publisher='', title_first: bool=True):
         self.title = title
         self.publisher = publisher
+        self.title_first = title_first
 
-    def get_tuple():
-        return self.title, self.publisher
+    def get_dict():
+        return {'title': self.title,
+                'publisher': self.publisher}
+
+    def get_tuple(title_first: bool=True):
+        if title_first or self.title_first:
+            return self.title, self.publisher
+        return self.publisher, self.title
 
     def display(title_first: bool=True):
-        if title_first:
+        if title_first or self.title_first:
             return f"{self.title}: {self.publisher}"
         return f"{self.publisher}: {self.title}"
 
