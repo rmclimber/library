@@ -11,16 +11,16 @@ class Record:
         self.publisher = publisher
         self.title_first = title_first
 
-    def get_dict():
+    def get_dict(self):
         return {'title': self.title,
                 'publisher': self.publisher}
 
-    def get_tuple(title_first: bool=True):
+    def get_tuple(self, title_first: bool=True):
         if title_first or self.title_first:
             return self.title, self.publisher
         return self.publisher, self.title
 
-    def display(title_first: bool=True):
+    def display(self, title_first: bool=True):
         if title_first or self.title_first:
             return f"{self.title}: {self.publisher}"
         return f"{self.publisher}: {self.title}"
@@ -32,6 +32,7 @@ class HBParser(HTMLParser):
     FORMAT_TAG_3 = 'text-holder'
     DATA_TAG_1 = 'h2'
     DATA_TAG_2 = 'p'
+    COLUMNS = ['Title', 'Publisher']
 
     def __init__(filename: str=''):
         super.__init__()
@@ -45,9 +46,68 @@ class HBParser(HTMLParser):
         self.in_format_1 = False
         self.in_format_2 = False
         self.in_format_3 = False
+        self.in_data_1 = False
+        self.in_data_2 = False
 
         # key data structure
-        self.books = []
+        self.records = []
+        self.current_record = None
+
+    # entering the tags
+    def handle_starttag(self, tag, attrs):
+        match tag:
+            case FORMAT_TAG_1:
+                self.in_format_1 = True
+            case FORMAT_TAG_2:
+                if self.in_format_2:
+                    self.in_format_2 = True
+            case FORMAT_TAG_3:
+                if self.in_format_2:
+                    self.in_format_3 = True
+            case DATA_TAG_1:
+                if self.in_format_3:
+                    self.in_data_1 = True
+            case DATA_TAG_2:
+                if self.in_format_3:
+                    self.in_data_2 = True
+            case _:
+                pass
+
+    # handle data
+    def handle_data(self, data):
+        if self.in_data_1:
+            self.current_record = Record(title=data)
+        if self.in_data_2:
+            self.current_record.publisher = data
+            self.records.append(self.current_record)
+            self.current_record = None
+
+
+    # closes out of the relevant tags
+    def handle_endtag(self, tag, attrs):
+        match tag:
+            case FORMAT_TAG_1:
+                self.in_format_1 = False
+            case FORMAT_TAG_2:
+                if self.in_format_2:
+                    self.in_format_2 = False
+            case FORMAT_TAG_3:
+                if self.in_format_2:
+                    self.in_format_3 = False
+            case DATA_TAG_1:
+                if self.in_format_3:
+                    self.in_data_1 = False
+            case DATA_TAG_2:
+                if self.in_format_3:
+                    self.in_data_2 = False
+            case _:
+                pass
+
+    # display records
+    def display_records():
+        output = '\n'.join([record.display() for record in self.records])
+        return output
+
 
 
 
