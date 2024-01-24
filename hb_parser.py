@@ -104,9 +104,16 @@ class HBParser(HTMLParser):
                 pass
 
     # display records
-    def display_records():
+    def display_records(self):
         output = '\n'.join([record.display() for record in self.records])
         return output
+
+    # parse the records
+    def parse(self):
+        html_str = ''
+        with open(self.filename, 'r') as file:
+            html_str += file.read()
+        self.feed(html_str)
 
 
 
@@ -127,13 +134,14 @@ if __name__ == "__main__":
 
     hbp = HBParser(filename)
     hbp.parse()
+    hbp.display_records()
 
-    if len(args) > 2:
-        hbp.write(args[2])
-    else:
-        print(f"No output filename. Writing to default file: {os.path.join(
-            os.getcwd(), hbp.DEFAULT_OUTPUT_NAME)}")
-        hbp.write()
+    # if len(args) > 2:
+    #     hbp.write(args[2])
+    # else:
+    #     print(f"No output filename. Writing to default file: {os.path.join(
+    #         os.getcwd(), hbp.DEFAULT_OUTPUT_NAME)}")
+    #     hbp.write()
 
 
 # subproduct-selector
