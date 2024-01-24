@@ -1,4 +1,4 @@
-import HTMLParser
+from html.parser import HTMLParser
 import csv
 import sys
 import os
@@ -34,8 +34,8 @@ class HBParser(HTMLParser):
     DATA_TAG_2 = 'p'
     COLUMNS = ['Title', 'Publisher']
 
-    def __init__(filename: str=''):
-        super.__init__()
+    def __init__(self, filename: str=''):
+        super().__init__()
         if filename:
             self.filename = filename
         else:
@@ -56,18 +56,18 @@ class HBParser(HTMLParser):
     # entering the tags
     def handle_starttag(self, tag, attrs):
         match tag:
-            case FORMAT_TAG_1:
+            case self.FORMAT_TAG_1:
                 self.in_format_1 = True
-            case FORMAT_TAG_2:
+            case self.FORMAT_TAG_2:
                 if self.in_format_2:
                     self.in_format_2 = True
-            case FORMAT_TAG_3:
+            case self.FORMAT_TAG_3:
                 if self.in_format_2:
                     self.in_format_3 = True
-            case DATA_TAG_1:
+            case self.DATA_TAG_1:
                 if self.in_format_3:
                     self.in_data_1 = True
-            case DATA_TAG_2:
+            case self.DATA_TAG_2:
                 if self.in_format_3:
                     self.in_data_2 = True
             case _:
@@ -84,20 +84,20 @@ class HBParser(HTMLParser):
 
 
     # closes out of the relevant tags
-    def handle_endtag(self, tag, attrs):
+    def handle_endtag(self, tag):
         match tag:
-            case FORMAT_TAG_1:
+            case self.FORMAT_TAG_1:
                 self.in_format_1 = False
-            case FORMAT_TAG_2:
+            case self.FORMAT_TAG_2:
                 if self.in_format_2:
                     self.in_format_2 = False
-            case FORMAT_TAG_3:
+            case self.FORMAT_TAG_3:
                 if self.in_format_2:
                     self.in_format_3 = False
-            case DATA_TAG_1:
+            case self.DATA_TAG_1:
                 if self.in_format_3:
                     self.in_data_1 = False
-            case DATA_TAG_2:
+            case self.DATA_TAG_2:
                 if self.in_format_3:
                     self.in_data_2 = False
             case _:
