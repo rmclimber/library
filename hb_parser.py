@@ -55,11 +55,8 @@ class HBParser(HTMLParser):
 
     # entering the tags
     def handle_starttag(self, tag, attrs):
-        # print(tag)
-        # print(attrs)
         if attrs and tag != self.DATA_TAG_1:
             name = attrs[0][1]
-            # print(name)
         else:
             name = tag
         match name:
@@ -79,18 +76,16 @@ class HBParser(HTMLParser):
                     self.in_data_2 = True
             case _:
                 pass
-        # print(self.in_format_1, self.in_format_2, self.in_format_3, self.in_data_1, self.in_data_2)
 
     # handle data
     def handle_data(self, data):
-        if self.in_data_1 and not self.in_data_2 and data:
-            # print(data)
+        if not data:
+            return
+        if self.in_data_1 and not self.in_data_2:
             self.current_record = Record(title=data)
-            # print(self.current_record.display())
-        elif not self.in_data_1 and self.in_data_2 and data:
-            # print(data)
+            self.in_data_1 = False
+        elif not self.in_data_1 and self.in_data_2:
             self.current_record.publisher = data
-            print(self.current_record.title)
             self.records.append(self.current_record)
             self.current_record = None
             self.in_format_1 = self.in_format_2 = self.in_format_3 = self.in_data_1 = self.in_data_2 = False
