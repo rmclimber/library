@@ -4,6 +4,12 @@ import sys
 import os
 import argparse
 
+"""
+IMPORTED PACKAGE DOCUMENTATION
+https://docs.python.org/3/library/html.parser.html
+https://docs.python.org/3/library/csv.html
+"""
+
 # bundle the records together
 class Record:
     def __init__(self, title: str='', publisher='', title_first: bool=True):
@@ -34,7 +40,7 @@ class HBParser(HTMLParser):
     DATA_TAG_2 = 'p'
     COLUMNS = ['Title', 'Publisher']
 
-    def __init__(self, filename: str=''):
+    def __init__(self, filename: str='', output_filename: str=DEFAULT_OUTPUT_NAME):
         super().__init__()
         if filename:
             self.filename = filename
@@ -52,6 +58,9 @@ class HBParser(HTMLParser):
         # key data structure
         self.records = []
         self.current_record = None
+
+        # data management
+        self.output_filename = output_filename
 
     # entering the tags
     def handle_starttag(self, tag, attrs):
@@ -109,6 +118,15 @@ class HBParser(HTMLParser):
             html_str += file.read()
         self.feed(html_str)
 
+    # write to csv
+    def to_csv(self, output_filename: str=''):
+        output_filename = output_filename if output_filename else self.output_filename
+
+        with open(output_filename, 'w+', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(self.COLUMNS)
+            [writer.writerow([record.title, record.publisher]) for record in self.records]
+
 
 
 
@@ -129,13 +147,7 @@ if __name__ == "__main__":
     hbp = HBParser(filename)
     hbp.parse()
     print(hbp.display_records())
-
-    # if len(args) > 2:
-    #     hbp.write(args[2])
-    # else:
-    #     print(f"No output filename. Writing to default file: {os.path.join(
-    #         os.getcwd(), hbp.DEFAULT_OUTPUT_NAME)}")
-    #     hbp.write()
+    hbp.to_csv()
 
 
 # subproduct-selector
