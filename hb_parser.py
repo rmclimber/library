@@ -6,7 +6,7 @@ import argparse
 
 # bundle the records together
 class Record:
-    def __init__(title: str='', publisher='', title_first: bool=True):
+    def __init__(self, title: str='', publisher='', title_first: bool=True):
         self.title = title
         self.publisher = publisher
         self.title_first = title_first
@@ -55,11 +55,18 @@ class HBParser(HTMLParser):
 
     # entering the tags
     def handle_starttag(self, tag, attrs):
-        match tag:
+        # print(tag)
+        # print(attrs)
+        if attrs and tag != self.DATA_TAG_1:
+            name = attrs[0][1]
+            # print(name)
+        else:
+            name = tag
+        match name:
             case self.FORMAT_TAG_1:
                 self.in_format_1 = True
             case self.FORMAT_TAG_2:
-                if self.in_format_2:
+                if self.in_format_1:
                     self.in_format_2 = True
             case self.FORMAT_TAG_3:
                 if self.in_format_2:
@@ -72,39 +79,31 @@ class HBParser(HTMLParser):
                     self.in_data_2 = True
             case _:
                 pass
+        # print(self.in_format_1, self.in_format_2, self.in_format_3, self.in_data_1, self.in_data_2)
 
     # handle data
     def handle_data(self, data):
-        if self.in_data_1:
+        if self.in_data_1 and not self.in_data_2 and data:
+            # print(data)
             self.current_record = Record(title=data)
-        if self.in_data_2:
+            # print(self.current_record.display())
+        elif not self.in_data_1 and self.in_data_2 and data:
+            # print(data)
             self.current_record.publisher = data
+            print(self.current_record.title)
             self.records.append(self.current_record)
             self.current_record = None
+            self.in_format_1 = self.in_format_2 = self.in_format_3 = self.in_data_1 = self.in_data_2 = False
 
 
     # closes out of the relevant tags
     def handle_endtag(self, tag):
-        match tag:
-            case self.FORMAT_TAG_1:
-                self.in_format_1 = False
-            case self.FORMAT_TAG_2:
-                if self.in_format_2:
-                    self.in_format_2 = False
-            case self.FORMAT_TAG_3:
-                if self.in_format_2:
-                    self.in_format_3 = False
-            case self.DATA_TAG_1:
-                if self.in_format_3:
-                    self.in_data_1 = False
-            case self.DATA_TAG_2:
-                if self.in_format_3:
-                    self.in_data_2 = False
-            case _:
-                pass
+        if tag == self.DATA_TAG_2:
+            self.in_format_1 = self.in_format_2 = self.in_format_3 = self.in_data_1 = self.in_data_2 = False
 
     # display records
     def display_records(self):
+        print(len(self.records))
         output = '\n'.join([record.display() for record in self.records])
         return output
 
@@ -134,7 +133,7 @@ if __name__ == "__main__":
 
     hbp = HBParser(filename)
     hbp.parse()
-    hbp.display_records()
+    print(hbp.display_records())
 
     # if len(args) > 2:
     #     hbp.write(args[2])
