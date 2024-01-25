@@ -147,7 +147,10 @@ if __name__ == "__main__":
     hbp = HBParser(filename)
     hbp.parse()
     print(hbp.display_records())
-    hbp.to_csv()
+    if len(args) > 2:
+        hbp.to_csv(args[2])
+    else:
+        hbp.to_csv()
 
 
 # subproduct-selector
