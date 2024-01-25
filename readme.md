@@ -1,3 +1,3 @@
 # Library
 
-Parsers and utilities for tracking my various research paper and PDF laibraries, Humble Bundles, etc.
+Parsers and utilities for tracking my various research paper and PDF libraries, Humble Bundles, etc.
