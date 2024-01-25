@@ -18,9 +18,17 @@ till you find the class named `scrollbar-hider`. Right-click and choose
 #### Running the script
 Assuming your Python version is 3.10+ and you saved the library HTML to 
 `foo.html`, you should be able to run 
-    python hb_parser.py foo.html
+
+```
+python hb_parser.py foo.html
+```
+
 from a bash terminal. If you'd like to save the result to a specific file
 named `bar.csv`, do:
-    python hb_parser.py foo.html bar.csv
+
+```
+python hb_parser.py foo.html bar.csv
+```
+
 By default, the script will save to `output.csv` in the current working
 directory. It also overwrites anything currently there. 
